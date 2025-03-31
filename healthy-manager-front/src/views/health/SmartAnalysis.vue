@@ -17,49 +17,46 @@
       <div slot="header" class="clearfix">
         <span>监测配置</span>
       </div>
-      <el-form label-width="120px" :model="dataSourceConfig">
-        <el-form-item label="同步频率">
-          <el-select
-            v-model="dataSourceConfig.frequency"
-            placeholder="请选择同步频率"
-          >
-            <el-option label="实时" value="realtime"></el-option>
-            <el-option label="每小时" value="hourly"></el-option>
-            <el-option label="每天" value="daily"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="监测人员" required>
-          <div class="user-select-container">
+      <div class="data-source-content">
+        <el-form
+          label-position="left"
+          label-width="120px"
+          :model="dataSourceConfig"
+        >
+          <el-form-item label="同步频率">
             <el-select
-              v-model="dataSourceConfig.userId"
-              filterable
-              placeholder="请选择监测人员"
-              style="width: ' 120px'"
+              v-model="dataSourceConfig.frequency"
+              placeholder="请选择同步频率"
+              style="width: 100%"
             >
-              <el-option
-                v-for="user in userList"
-                :key="user.id"
-                :label="user.name"
-                :value="user.id"
-              >
-              </el-option>
+              <el-option label="实时" value="realtime"></el-option>
+              <el-option label="每小时" value="hourly"></el-option>
+              <el-option label="每天" value="daily"></el-option>
             </el-select>
-            <!-- <el-button
-              v-if="dataSourceConfig.userId"
-              icon="el-icon-delete"
-              size="small"
-              type="danger"
-              circle
-              title="清除当前选择"
-              style="margin-left: 10px"
-              @click="clearUserSelection"
-            ></el-button> -->
-          </div>
-          <div class="user-select-tip" v-if="!dataSourceConfig.userId">
-            <i class="el-icon-warning"></i> 请先选择监测人员查看健康数据
-          </div>
-        </el-form-item>
-      </el-form>
+          </el-form-item>
+          <el-form-item label="监测人员" required>
+            <div class="user-select-container">
+              <el-select
+                v-model="dataSourceConfig.userId"
+                filterable
+                placeholder="请选择监测人员"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="user in userList"
+                  :key="user.id"
+                  :label="user.name"
+                  :value="user.id"
+                >
+                </el-option>
+              </el-select>
+            </div>
+            <div class="user-select-tip" v-if="!dataSourceConfig.userId">
+              <i class="el-icon-warning"></i> 请先选择监测人员查看健康数据
+            </div>
+          </el-form-item>
+        </el-form>
+      </div>
     </el-card>
 
     <el-row :gutter="20" class="dashboard-row">
@@ -172,8 +169,10 @@
     </el-row>
 
     <el-card class="alert-card">
-      <div slot="header" class="clearfix">
-        <span>健康预警</span>
+      <div slot="header" class="clearfix card-header">
+        <span class="card-title"
+          ><i class="el-icon-warning-outline"></i> 健康预警</span
+        >
         <el-badge
           :value="alerts.length"
           class="item"
@@ -185,27 +184,45 @@
       <div v-if="alerts.length === 0" class="no-alerts">
         目前没有健康预警，继续保持良好习惯！
       </div>
-      <el-timeline v-else>
+      <el-timeline v-else class="alert-timeline">
         <el-timeline-item
           v-for="(alert, index) in alerts"
           :key="index"
           :timestamp="alert.time"
-          :type="alert.type"
           :color="alert.color"
           :icon="alert.icon"
+          class="custom-timeline-item"
         >
-          <strong>{{ alert.type }}</strong
-          >: {{ alert.message }}
-          <el-button size="mini" type="primary" @click="showAlertDetail(alert)"
-            >查看详情</el-button
-          >
+          <div class="alert-item">
+            <div class="alert-item-content">
+              <div class="alert-title" :style="{ color: alert.color }">
+                <strong>{{ alert.type }}</strong>
+              </div>
+              <div class="alert-message">{{ alert.message }}</div>
+            </div>
+            <div class="alert-action">
+              <el-button
+                size="mini"
+                type="primary"
+                class="detail-btn"
+                @click="showAlertDetail(alert)"
+                :style="{
+                  backgroundColor: alert.color,
+                  borderColor: alert.color,
+                }"
+                >查看详情</el-button
+              >
+            </div>
+          </div>
         </el-timeline-item>
       </el-timeline>
     </el-card>
 
     <el-card class="suggestion-card">
-      <div slot="header" class="clearfix">
-        <span>智能建议</span>
+      <div slot="header" class="clearfix card-header">
+        <span class="card-title"
+          ><i class="el-icon-s-opportunity"></i> 智能建议</span
+        >
       </div>
       <div class="suggestion-content">
         <div v-if="suggestions.length === 0" class="no-suggestions">
@@ -1116,6 +1133,36 @@ export default {
   width: 100%;
 }
 
+.data-source-card {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.data-source-content {
+  padding: 10px 0;
+}
+
+/* 修复表单对齐问题 */
+.data-source-card .el-form {
+  width: 100% !important;
+  display: block !important;
+}
+
+.data-source-card .el-form-item {
+  margin-bottom: 18px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.data-source-card .el-form-item__content {
+  flex: 1 !important;
+  margin-left: 0 !important;
+}
+
+.data-source-card .el-select {
+  width: 100%;
+}
+
 /* 确保图表容器有固定尺寸 */
 .chart-card {
   min-height: 370px;
@@ -1163,32 +1210,43 @@ export default {
   margin-top: 20px;
 }
 
+/* 智能建议样式优化 */
 .suggestion-content {
-  padding: 10px;
+  padding: 15px;
 }
 
 .suggestion-item {
   display: flex;
   align-items: flex-start;
-  margin-bottom: 20px;
-  padding: 10px;
-  border-radius: 4px;
+  margin-bottom: 15px;
+  padding: 15px;
+  border-radius: 6px;
   background-color: #f5f7fa;
-  transition: background-color 0.3s;
+  transition: all 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border-left: 4px solid #409eff;
+}
+
+.suggestion-item:last-child {
+  margin-bottom: 0;
 }
 
 .suggestion-item:hover {
   background-color: #ecf5ff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .suggestion-icon {
-  flex: 0 0 40px;
-  height: 40px;
-  line-height: 40px;
+  flex: 0 0 50px;
+  height: 50px;
+  line-height: 50px;
   text-align: center;
   font-size: 24px;
   color: #409eff;
   margin-right: 15px;
+  background-color: rgba(64, 158, 255, 0.1);
+  border-radius: 50%;
 }
 
 .suggestion-text {
@@ -1199,12 +1257,14 @@ export default {
   margin: 0 0 10px 0;
   font-weight: 500;
   color: #303133;
+  font-size: 16px;
 }
 
 .suggestion-text p {
   margin: 0;
   line-height: 1.6;
   color: #606266;
+  font-size: 14px;
 }
 
 .el-timeline-item {
@@ -1337,6 +1397,7 @@ export default {
 .user-select-container {
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .user-select-tip {
@@ -1347,5 +1408,97 @@ export default {
 
 .user-select-tip i {
   margin-right: 4px;
+}
+
+.alert-timeline {
+  padding: 0;
+}
+
+.custom-timeline-item {
+  padding-bottom: 0;
+}
+
+.alert-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px 15px;
+  margin-bottom: 5px;
+  border-radius: 4px;
+  border-bottom: 1px solid #ebeef5;
+  background-color: #fafafa;
+  transition: all 0.3s;
+}
+
+.alert-item:hover {
+  background-color: #f5f7fa;
+}
+
+.alert-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.alert-item-content {
+  flex: 1;
+}
+
+.alert-title {
+  font-size: 15px;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.alert-message {
+  color: #606266;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 5px;
+}
+
+.alert-action {
+  flex: 0 0 auto;
+}
+
+.detail-btn {
+  padding: 8px 15px;
+  font-size: 12px;
+  border-radius: 4px;
+  color: #fff;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s;
+}
+
+.detail-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+::v-deep .alert-timeline .el-timeline-item__timestamp {
+  color: #909399;
+  font-size: 12px;
+  padding-top: 3px;
+}
+
+::v-deep .alert-timeline .el-timeline-item__node {
+  background-color: transparent;
+  border: 2px solid;
+}
+
+::v-deep .alert-timeline .el-timeline-item__tail {
+  border-left: 2px dashed #e4e7ed;
 }
 </style>
