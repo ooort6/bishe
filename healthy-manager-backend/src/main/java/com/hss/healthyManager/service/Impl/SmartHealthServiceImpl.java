@@ -351,14 +351,11 @@ public class SmartHealthServiceImpl implements SmartHealthService {
      */
     @Override
     public List<SmartHealthAlert> getHealthAlerts(Integer userId, Integer limit) {
-        List<SmartHealthAlert> alerts = smartHealthAlertDao.getAlertsByUserId(userId, limit);
-        if (alerts == null || alerts.isEmpty()) {
-            // 如果没有数据，生成一些模拟数据
-            alerts = generateMockAlerts(userId, 3);
-            for (SmartHealthAlert alert : alerts) {
-                smartHealthAlertDao.insert(alert);
-            }
-        }
+        // 直接生成并返回模拟数据，不从数据库查询
+        List<SmartHealthAlert> alerts = generateMockAlerts(userId, 4);
+
+        // 打印日志，便于调试
+        System.out.println("生成健康预警数量: " + alerts.size());
         return alerts;
     }
 
@@ -367,14 +364,11 @@ public class SmartHealthServiceImpl implements SmartHealthService {
      */
     @Override
     public List<SmartHealthSuggestion> getHealthSuggestions(Integer userId, Integer limit) {
-        List<SmartHealthSuggestion> suggestions = smartHealthSuggestionDao.getSuggestionsByUserId(userId, limit);
-        if (suggestions == null || suggestions.isEmpty()) {
-            // 如果没有数据，生成一些模拟数据
-            suggestions = generateMockSuggestions(userId, 3);
-            for (SmartHealthSuggestion suggestion : suggestions) {
-                smartHealthSuggestionDao.insert(suggestion);
-            }
-        }
+        // 直接生成并返回模拟数据，不从数据库查询
+        List<SmartHealthSuggestion> suggestions = generateMockSuggestions(userId, 4);
+
+        // 打印日志，便于调试
+        System.out.println("生成健康建议数量: " + suggestions.size());
         return suggestions;
     }
 
@@ -711,36 +705,52 @@ public class SmartHealthServiceImpl implements SmartHealthService {
                 .setAlertType("血压异常")
                 .setAlertLevel("高")
                 .setAlertContent("收缩压135mmHg，舒张压90mmHg，略高于标准值。请注意降低盐分摄入，增加有氧运动。")
+                .setColor("red")
+                .setIcon("el-icon-warning")
                 .setIsRead(false);
         alerts.add(alert1);
 
-        if (count > 1) {
-            // 心率预警
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.HOUR, -3);
-            SmartHealthAlert alert2 = new SmartHealthAlert();
-            alert2.setUserId(userId)
-                    .setAlertTime(cal.getTime())
-                    .setAlertType("心率异常")
-                    .setAlertLevel("高")
-                    .setAlertContent("在过去的一小时内，您的心率从75次/分钟升高到112次/分钟。若无剧烈运动，请注意休息。")
-                    .setIsRead(false);
-            alerts.add(alert2);
-        }
+        // 心率预警
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.HOUR, -3);
+        SmartHealthAlert alert2 = new SmartHealthAlert();
+        alert2.setUserId(userId)
+                .setAlertTime(cal.getTime())
+                .setAlertType("心率异常")
+                .setAlertLevel("高")
+                .setAlertContent("在过去的一小时内，您的心率从75次/分钟升高到112次/分钟。若无剧烈运动，请注意休息。")
+                .setColor("red")
+                .setIcon("el-icon-warning")
+                .setIsRead(false);
+        alerts.add(alert2);
 
-        if (count > 2) {
-            // 睡眠预警
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.DAY_OF_MONTH, -1);
-            SmartHealthAlert alert3 = new SmartHealthAlert();
-            alert3.setUserId(userId)
-                    .setAlertTime(cal.getTime())
-                    .setAlertType("睡眠异常")
-                    .setAlertLevel("低")
-                    .setAlertContent("昨晚深度睡眠仅占总睡眠时间的22%，低于健康标准。建议调整睡眠环境，保持规律作息。")
-                    .setIsRead(true);
-            alerts.add(alert3);
-        }
+        // 睡眠预警
+        Calendar cal2 = Calendar.getInstance();
+        cal2.add(Calendar.DAY_OF_MONTH, -1);
+        SmartHealthAlert alert3 = new SmartHealthAlert();
+        alert3.setUserId(userId)
+                .setAlertTime(cal2.getTime())
+                .setAlertType("睡眠异常")
+                .setAlertLevel("低")
+                .setAlertContent("昨晚深度睡眠仅占总睡眠时间的22%，低于健康标准。建议调整睡眠环境，保持规律作息。")
+                .setColor("blue")
+                .setIcon("el-icon-info")
+                .setIsRead(true);
+        alerts.add(alert3);
+
+        // 血糖预警
+        Calendar cal3 = Calendar.getInstance();
+        cal3.add(Calendar.DAY_OF_MONTH, -2);
+        SmartHealthAlert alert4 = new SmartHealthAlert();
+        alert4.setUserId(userId)
+                .setAlertTime(cal3.getTime())
+                .setAlertType("血糖异常")
+                .setAlertLevel("中")
+                .setAlertContent("餐后血糖值达到7.2mmol/L，建议调整饮食结构，减少精制碳水化合物的摄入。")
+                .setColor("orange")
+                .setIcon("el-icon-warning-outline")
+                .setIsRead(false);
+        alerts.add(alert4);
 
         return alerts;
     }
@@ -755,35 +765,47 @@ public class SmartHealthServiceImpl implements SmartHealthService {
         SmartHealthSuggestion suggestion1 = new SmartHealthSuggestion();
         suggestion1.setUserId(userId)
                 .setSuggestionTime(new Date())
-                .setIcon("el-icon-heavy-rain")
+                .setIcon("el-icon-bicycle")
                 .setSuggestionTitle("增加运动时间")
                 .setSuggestionContent("建议每天保持至少30分钟中等强度的运动，如快走、游泳或骑自行车。规律的运动有助于改善心肺功能，降低慢性疾病风险。")
                 .setIsRead(false);
         suggestions.add(suggestion1);
 
-        if (count > 1) {
-            // 饮食建议
-            SmartHealthSuggestion suggestion2 = new SmartHealthSuggestion();
-            suggestion2.setUserId(userId)
-                    .setSuggestionTime(new Date())
-                    .setIcon("el-icon-food")
-                    .setSuggestionTitle("调整饮食结构")
-                    .setSuggestionContent("建议采用均衡饮食模式，增加蔬菜水果摄入，适量摄取全谷物和优质蛋白，减少精加工食品和含糖饮料的消费。")
-                    .setIsRead(false);
-            suggestions.add(suggestion2);
-        }
+        // 饮食建议
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_MONTH, -1);
+        SmartHealthSuggestion suggestion2 = new SmartHealthSuggestion();
+        suggestion2.setUserId(userId)
+                .setSuggestionTime(cal.getTime())
+                .setIcon("el-icon-food")
+                .setSuggestionTitle("调整饮食结构")
+                .setSuggestionContent("建议采用均衡饮食模式，增加蔬菜水果摄入，适量摄取全谷物和优质蛋白，减少精加工食品和含糖饮料的消费。")
+                .setIsRead(false);
+        suggestions.add(suggestion2);
 
-        if (count > 2) {
-            // 水分建议
-            SmartHealthSuggestion suggestion3 = new SmartHealthSuggestion();
-            suggestion3.setUserId(userId)
-                    .setSuggestionTime(new Date())
-                    .setIcon("el-icon-cold-drink")
-                    .setSuggestionTitle("增加水分摄入")
-                    .setSuggestionContent("保持充足的水分摄入对维持身体健康非常重要。建议每天饮水量达到1.5-2升，尤其是在运动后或天气炎热时更应及时补充水分。")
-                    .setIsRead(false);
-            suggestions.add(suggestion3);
-        }
+        // 水分建议
+        Calendar cal2 = Calendar.getInstance();
+        cal2.add(Calendar.DAY_OF_MONTH, -2);
+        SmartHealthSuggestion suggestion3 = new SmartHealthSuggestion();
+        suggestion3.setUserId(userId)
+                .setSuggestionTime(cal2.getTime())
+                .setIcon("el-icon-cold-drink")
+                .setSuggestionTitle("增加水分摄入")
+                .setSuggestionContent("保持充足的水分摄入对维持身体健康非常重要。建议每天饮水量达到1.5-2升，尤其是在运动后或天气炎热时更应及时补充水分。")
+                .setIsRead(false);
+        suggestions.add(suggestion3);
+
+        // 睡眠建议
+        Calendar cal3 = Calendar.getInstance();
+        cal3.add(Calendar.DAY_OF_MONTH, -3);
+        SmartHealthSuggestion suggestion4 = new SmartHealthSuggestion();
+        suggestion4.setUserId(userId)
+                .setSuggestionTime(cal3.getTime())
+                .setIcon("el-icon-moon")
+                .setSuggestionTitle("改善睡眠质量")
+                .setSuggestionContent("建议睡前1小时避免使用电子产品，营造安静舒适的睡眠环境，保持规律的作息时间，有助于提高睡眠质量。")
+                .setIsRead(true);
+        suggestions.add(suggestion4);
 
         return suggestions;
     }
