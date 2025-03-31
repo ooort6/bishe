@@ -1,4 +1,6 @@
 node_modules/
+**/node_modules/
+healthy-manager-front/node_modules/
 
 # 前端忽略文件
 /dist/
@@ -11,6 +13,8 @@ yarn.lock
 # 后端忽略文件
 HELP.md
 target/
+**/target/
+healthy-manager-backend/target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
