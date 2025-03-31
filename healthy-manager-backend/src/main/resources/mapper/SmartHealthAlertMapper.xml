@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hss.healthyManager.dao.SmartHealthAlertDao">
+    
+    <select id="getAlertsByUserId" resultType="com.hss.healthyManager.entity.SmartHealthAlert">
+        SELECT * FROM smart_health_alert
+        WHERE user_id = #{userId}
+        ORDER BY alert_time DESC
+        LIMIT #{limit}
+    </select>
+    
+    <select id="getUnreadAlertsCountByUserId" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM smart_health_alert
+        WHERE user_id = #{userId} AND is_read = false
+    </select>
+    
+</mapper> 

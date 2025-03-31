@@ -222,58 +222,30 @@ export default {
         userId: "",
       },
       healthData: {
-        calories: 37,
+        calories: 0,
         caloriesTarget: 400,
-        steps: 788,
+        steps: 0,
         stepsTarget: 6000,
         activeMinutes: 0,
         activeMinutesTarget: 30,
-        weight: 87.8,
-        lastWeight: 86.5,
-        weightDate: "9月18日 18:45",
-        heartRate: 75,
+        weight: 0,
+        lastWeight: 0,
+        weightDate: "",
+        heartRate: 0,
         bloodPressure: {
-          systolic: 120,
-          diastolic: 80,
+          systolic: 0,
+          diastolic: 0,
         },
-        bloodSugar: 5.6,
+        bloodSugar: 0,
         sleep: {
-          deepSleep: 2.5,
-          lightSleep: 4.3,
-          remSleep: 1.2,
-          awake: 0.5,
+          deepSleep: 0,
+          lightSleep: 0,
+          remSleep: 0,
+          awake: 0,
         },
       },
-      alerts: [
-        {
-          type: "warning",
-          color: "#E6A23C",
-          icon: "el-icon-warning",
-          time: "2023-09-18 14:30",
-          message: "您的血压略高于正常值，建议注意休息",
-          detail:
-            "收缩压135mmHg，舒张压90mmHg，略高于标准值。请注意降低盐分摄入，增加有氧运动。",
-        },
-      ],
-      suggestions: [
-        {
-          icon: "el-icon-heavy-rain",
-          title: "增加运动时间",
-          content:
-            "根据您近期的数据，建议每天增加30分钟的中等强度运动，如快走或慢跑。",
-        },
-        {
-          icon: "el-icon-food",
-          title: "调整饮食结构",
-          content:
-            "您的体重有上升趋势，建议减少碳水化合物摄入，增加蛋白质和蔬菜比例。",
-        },
-        {
-          icon: "el-icon-cold-drink",
-          title: "增加水分摄入",
-          content: "您的活动量增加，但水分摄入不足，建议每天饮水量达到2000ml。",
-        },
-      ],
+      alerts: [],
+      suggestions: [],
       progressColors: [
         { color: "#f56c6c", percentage: 20 },
         { color: "#e6a23c", percentage: 40 },
@@ -283,41 +255,17 @@ export default {
       ],
       chartData: {
         heartRate: {
-          times: [
-            "00:00",
-            "04:00",
-            "08:00",
-            "12:00",
-            "16:00",
-            "20:00",
-            "24:00",
-          ],
-          values: [65, 62, 70, 85, 80, 75, 68],
+          times: [],
+          values: [],
         },
         bloodPressure: {
-          times: [
-            "00:00",
-            "04:00",
-            "08:00",
-            "12:00",
-            "16:00",
-            "20:00",
-            "24:00",
-          ],
-          systolic: [115, 110, 120, 135, 130, 125, 118],
-          diastolic: [75, 72, 78, 90, 85, 82, 76],
+          times: [],
+          systolic: [],
+          diastolic: [],
         },
         bloodSugar: {
-          times: [
-            "00:00",
-            "04:00",
-            "08:00",
-            "12:00",
-            "16:00",
-            "20:00",
-            "24:00",
-          ],
-          values: [5.2, 5.0, 5.8, 6.5, 6.0, 5.7, 5.4],
+          times: [],
+          values: [],
         },
       },
     };
@@ -341,7 +289,7 @@ export default {
 
       this.collecting = true;
       this.timer = setInterval(() => {
-        this.mockDataUpdate();
+        this.fetchData();
       }, 5000);
     },
     stopDataCollection() {
@@ -369,67 +317,162 @@ export default {
         type: "success",
       });
 
-      this.mockDataUpdate();
-      this.initCharts();
+      this.fetchData();
     },
     calculatePercentage(value, target) {
+      if (!target || target === 0) {
+        return 0; // 如果目标值为0或不存在，返回0%
+      }
       return Math.min(Math.round((value / target) * 100), 100);
     },
-    mockDataUpdate() {
-      // 模拟数据更新
-      this.healthData.calories = Math.floor(
-        this.healthData.calories + Math.random() * 5
-      );
-      this.healthData.steps = Math.floor(
-        this.healthData.steps + Math.random() * 50
-      );
-      this.healthData.activeMinutes = Math.min(
-        30,
-        Math.floor(this.healthData.activeMinutes + Math.random() * 2)
-      );
+    fetchData() {
+      const userId = this.dataSourceConfig.userId;
+      if (!userId) return;
 
-      // 随机生成健康预警
-      if (Math.random() > 0.8 && this.alerts.length < 3) {
-        const alertTypes = [
-          {
-            type: "warning",
-            color: "#E6A23C",
-            icon: "el-icon-warning",
-            message: "您的心率略高，建议放松休息",
-            detail:
-              "心率达到95bpm，高于您的平均水平。可能是由于运动或压力导致。",
-          },
-          {
-            type: "info",
-            color: "#909399",
-            icon: "el-icon-info",
-            message: "今日步数较少，建议增加活动",
-            detail: "当前步数低于您的日均水平30%。适当增加活动有助于维持健康。",
-          },
-        ];
+      // 获取最新健康数据
+      this.$http
+        .get(`/smart-health/latest-data/${userId}`)
+        .then((res) => {
+          if (res.status === 200) {
+            const data = res.data;
+            this.healthData.calories = data.calories || 0;
+            this.healthData.caloriesTarget = data.caloriesTarget || 400;
+            this.healthData.steps = data.steps || 0;
+            this.healthData.stepsTarget = data.stepsTarget || 8000;
+            this.healthData.activeMinutes = data.activeMinutes || 0;
+            this.healthData.activeMinutesTarget =
+              data.activeMinutesTarget || 30;
+            this.healthData.weight = data.weight || 0;
+            this.healthData.lastWeight = data.lastWeight || 0;
+            this.healthData.weightDate = data.weightDate || "";
+            this.healthData.heartRate = data.heartRate || 0;
+            // 修正字段名，与后端对应
+            this.healthData.bloodPressure.systolic =
+              data.bloodPressureHigh || 0;
+            this.healthData.bloodPressure.diastolic =
+              data.bloodPressureLow || 0;
+            this.healthData.bloodSugar = data.bloodSugar || 0;
+            // 注意：这些字段在实体类中不存在，需要在后端或前端处理
+            this.healthData.sleep.deepSleep = data.deepSleepTime || 0;
+            this.healthData.sleep.lightSleep = data.lightSleepTime || 0;
+            this.healthData.sleep.remSleep = data.remSleep || 0;
+            this.healthData.sleep.awake = data.awake || 0;
 
-        const randomAlert =
-          alertTypes[Math.floor(Math.random() * alertTypes.length)];
-        randomAlert.time = new Date().toLocaleString();
-        this.alerts.unshift(randomAlert);
+            console.log("获取到的健康数据:", data);
+          }
+        })
+        .catch((err) => {
+          console.error("获取健康数据失败:", err);
+          this.$message.error("获取健康数据失败");
+        });
 
-        if (randomAlert.type === "warning") {
-          this.$notify({
-            title: "健康预警",
-            message: randomAlert.message,
-            type: "warning",
-            duration: 5000,
-          });
-        }
-      }
+      // 获取图表数据
+      this.$http
+        .get(`/smart-health/chart-data/${userId}`)
+        .then((res) => {
+          if (res.status === 200) {
+            const chartData = res.data;
 
-      // 更新图表数据
-      this.updateChartData();
+            // 心率图表数据
+            if (chartData.heartRate) {
+              this.chartData.heartRate.times = chartData.heartRate.times;
+              this.chartData.heartRate.values = chartData.heartRate.values;
+            }
+
+            // 血压图表数据
+            if (chartData.bloodPressure) {
+              this.chartData.bloodPressure.times =
+                chartData.bloodPressure.times;
+              this.chartData.bloodPressure.systolic =
+                chartData.bloodPressure.systolic;
+              this.chartData.bloodPressure.diastolic =
+                chartData.bloodPressure.diastolic;
+            }
+
+            // 血糖图表数据
+            if (chartData.bloodSugar) {
+              this.chartData.bloodSugar.times = chartData.bloodSugar.times;
+              this.chartData.bloodSugar.values = chartData.bloodSugar.values;
+            }
+
+            // 更新图表
+            this.initCharts();
+          }
+        })
+        .catch((err) => {
+          console.error("获取图表数据失败:", err);
+          this.$message.error("获取图表数据失败");
+        });
+
+      // 获取健康预警
+      this.$http
+        .get(`/smart-health/alerts/${userId}`)
+        .then((res) => {
+          if (res.status === 200) {
+            this.alerts = res.data.map((alert) => {
+              // 格式化时间
+              const time = new Date(alert.alertTime);
+              const formattedTime = `${time.getFullYear()}-${
+                time.getMonth() + 1
+              }-${time.getDate()} ${time.getHours()}:${time.getMinutes()}`;
+
+              return {
+                id: alert.id,
+                type: alert.type,
+                color: alert.color,
+                icon: alert.icon,
+                time: formattedTime,
+                message: alert.message,
+                detail: alert.detail,
+                isRead: alert.isRead,
+              };
+            });
+          }
+        })
+        .catch((err) => {
+          console.error("获取健康预警失败:", err);
+          this.$message.error("获取健康预警失败");
+        });
+
+      // 获取健康建议
+      this.$http
+        .get(`/smart-health/suggestions/${userId}`)
+        .then((res) => {
+          if (res.status === 200) {
+            this.suggestions = res.data.map((suggestion) => {
+              return {
+                id: suggestion.id,
+                icon: suggestion.icon,
+                title: suggestion.title,
+                content: suggestion.content,
+                isRead: suggestion.isRead,
+              };
+            });
+          }
+        })
+        .catch((err) => {
+          console.error("获取健康建议失败:", err);
+          this.$message.error("获取健康建议失败");
+        });
     },
     showAlertDetail(alert) {
       this.$alert(alert.detail, alert.message, {
-        confirmButtonText: "确定",
-        type: alert.type,
+        confirmButtonText: "我知道了",
+        callback: () => {
+          // 如果未读，标记为已读
+          if (!alert.isRead && alert.id) {
+            this.$http
+              .put(`/smart-health/alert/read/${alert.id}`)
+              .then((res) => {
+                if (res.status === 200 && res.data) {
+                  alert.isRead = true;
+                }
+              })
+              .catch((err) => {
+                console.error("标记预警为已读失败:", err);
+              });
+          }
+        },
       });
     },
     loadUserList() {
@@ -675,64 +718,13 @@ export default {
         });
       });
     },
-    updateChartData() {
-      if (!this.collecting) return;
-
-      // 更新心率数据
-      const lastHeartRate =
-        this.chartData.heartRate.values[
-          this.chartData.heartRate.values.length - 1
-        ];
-      const newHeartRate = Math.max(
-        55,
-        Math.min(100, lastHeartRate + (Math.random() * 10 - 5))
-      );
-      this.chartData.heartRate.values.shift();
-      this.chartData.heartRate.values.push(Math.round(newHeartRate));
-
-      // 更新血压数据
-      const lastSystolic =
-        this.chartData.bloodPressure.systolic[
-          this.chartData.bloodPressure.systolic.length - 1
-        ];
-      const newSystolic = Math.max(
-        100,
-        Math.min(140, lastSystolic + (Math.random() * 8 - 4))
-      );
-      this.chartData.bloodPressure.systolic.shift();
-      this.chartData.bloodPressure.systolic.push(Math.round(newSystolic));
-
-      const lastDiastolic =
-        this.chartData.bloodPressure.diastolic[
-          this.chartData.bloodPressure.diastolic.length - 1
-        ];
-      const newDiastolic = Math.max(
-        65,
-        Math.min(95, lastDiastolic + (Math.random() * 6 - 3))
-      );
-      this.chartData.bloodPressure.diastolic.shift();
-      this.chartData.bloodPressure.diastolic.push(Math.round(newDiastolic));
-
-      // 更新血糖数据
-      const lastBloodSugar =
-        this.chartData.bloodSugar.values[
-          this.chartData.bloodSugar.values.length - 1
-        ];
-      const newBloodSugar = Math.max(
-        4.5,
-        Math.min(7.0, lastBloodSugar + (Math.random() * 0.4 - 0.2))
-      );
-      this.chartData.bloodSugar.values.shift();
-      this.chartData.bloodSugar.values.push(
-        parseFloat(newBloodSugar.toFixed(1))
-      );
-
-      this.initCharts();
-    },
   },
   mounted() {
     this.loadUserList();
-    this.initCharts();
+    // 初始化后立即获取数据
+    if (this.dataSourceConfig.userId) {
+      this.fetchData();
+    }
   },
   beforeDestroy() {
     if (this.timer) {

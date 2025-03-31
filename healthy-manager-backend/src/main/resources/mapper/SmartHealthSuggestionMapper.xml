@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hss.healthyManager.dao.SmartHealthSuggestionDao">
+    
+    <select id="getSuggestionsByUserId" resultType="com.hss.healthyManager.entity.SmartHealthSuggestion">
+        SELECT * FROM smart_health_suggestion
+        WHERE user_id = #{userId}
+        ORDER BY suggestion_time DESC
+        LIMIT #{limit}
+    </select>
+    
+</mapper> 

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hss.healthyManager.dao.SmartHealthDataDao">
+    
+    <select id="getLatestDataByUserId" resultType="com.hss.healthyManager.entity.SmartHealthData">
+        SELECT * FROM smart_health_data
+        WHERE user_id = #{userId}
+        ORDER BY data_time DESC
+        LIMIT 1
+    </select>
+    
+    <select id="getHeartRateDataByUserId" resultType="com.hss.healthyManager.entity.SmartHealthData">
+        SELECT id, user_id, data_time, heart_rate
+        FROM smart_health_data
+        WHERE user_id = #{userId} AND heart_rate IS NOT NULL
+        ORDER BY data_time DESC
+        LIMIT #{limit}
+    </select>
+    
+    <select id="getBloodPressureDataByUserId" resultType="com.hss.healthyManager.entity.SmartHealthData">
+        SELECT id, user_id, data_time, blood_pressure_high, blood_pressure_low
+        FROM smart_health_data
+        WHERE user_id = #{userId} AND blood_pressure_high IS NOT NULL AND blood_pressure_low IS NOT NULL
+        ORDER BY data_time DESC
+        LIMIT #{limit}
+    </select>
+    
+    <select id="getBloodSugarDataByUserId" resultType="com.hss.healthyManager.entity.SmartHealthData">
+        SELECT id, user_id, data_time, blood_sugar
+        FROM smart_health_data
+        WHERE user_id = #{userId} AND blood_sugar IS NOT NULL
+        ORDER BY data_time DESC
+        LIMIT #{limit}
+    </select>
+    
+    <select id="getLatestSleepDataByUserId" resultType="com.hss.healthyManager.entity.SmartHealthData">
+        SELECT id, user_id, data_time, sleep_time, deep_sleep_time, light_sleep_time, 
+               heart_rate, blood_pressure_high, blood_pressure_low, blood_sugar
+        FROM smart_health_data
+        WHERE user_id = #{userId} AND sleep_time > 0
+        ORDER BY data_time DESC
+        LIMIT 1
+    </select>
+    
+</mapper> 

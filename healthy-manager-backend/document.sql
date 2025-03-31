@@ -364,3 +364,4 @@ INSERT INTO `user` VALUES (2, '2019-04-18 19:57:48', '2019-04-18 19:58:50', NULL
 INSERT INTO `user` VALUES (3, '2020-05-29 15:53:07', '2019-04-18 18:42:30', NULL, NULL, NULL, NULL, '外科医生', '3113cf3aa9e2c7362392393b0020cf33', 6, NULL, 'waike', 'waike', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 SET FOREIGN_KEY_CHECKS = 1;
+-- 注意：智能健康分析相关的表结构请执行 smart_health_tables.sql 文件
