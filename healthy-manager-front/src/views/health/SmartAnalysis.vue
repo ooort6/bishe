@@ -20,7 +20,7 @@
       <div class="data-source-content">
         <el-form
           label-position="left"
-          label-width="120px"
+          label-width="100px"
           :model="dataSourceConfig"
         >
           <el-form-item label="同步频率">
@@ -1156,7 +1156,7 @@ export default {
 
 .data-source-card .el-form-item__content {
   flex: 1 !important;
-  margin-left: 0 !important;
+  /* margin-left: 0 !important; */
 }
 
 .data-source-card .el-select {
@@ -1250,7 +1250,8 @@ export default {
 }
 
 .suggestion-text {
-  flex: 1;
+  text-align: left;
+  /* flex: 1; */
 }
 
 .suggestion-text h4 {
@@ -1440,7 +1441,9 @@ export default {
 }
 
 .alert-item-content {
-  flex: 1;
+  text-align: left;
+
+  /* flex: 1; */
 }
 
 .alert-title {
@@ -1450,6 +1453,7 @@ export default {
 }
 
 .alert-message {
+  text-align: left;
   color: #606266;
   font-size: 13px;
   line-height: 1.5;
@@ -1457,7 +1461,9 @@ export default {
 }
 
 .alert-action {
-  flex: 0 0 auto;
+  text-align: left;
+
+  /* flex: 0 0 auto; */
 }
 
 .detail-btn {
@@ -1488,6 +1494,7 @@ export default {
 }
 
 ::v-deep .alert-timeline .el-timeline-item__timestamp {
+  text-align: left;
   color: #909399;
   font-size: 12px;
   padding-top: 3px;

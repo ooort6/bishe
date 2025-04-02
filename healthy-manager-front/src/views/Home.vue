@@ -3,23 +3,26 @@
     <div class="header">
       <div class="logo">
         <a href="https://www.hbue.edu.cn/" target="_blank">
-          <img src="@/assets/hbue.jpg" style="width: 60px;height: 60px" />
+          <img src="@/assets/hbue.jpg" style="width: 60px; height: 60px" />
         </a>
         <div
-          style="height: 60px;background: linear-gradient(to right, white, #737c83);"
+          style="
+            height: 60px;
+            background: linear-gradient(to right, white, #737c83);
+          "
         >
           <router-link to="/index" style="text-decoration: none">
-            <h3 style="color: #3a8ee6;letter-spacing: 3px;">
+            <h3 style="color: #3a8ee6; letter-spacing: 3px">
               大学生健康管理系统
             </h3>
           </router-link>
         </div>
       </div>
-      <div style="width: 500px;height: 60px;">
-        <span style="color:white;letter-spacing: 5px"></span>
+      <div style="width: 500px; height: 60px">
+        <span style="color: white; letter-spacing: 5px"></span>
       </div>
       <div class="right">
-        <el-dropdown style="float: right;">
+        <el-dropdown style="float: right; cursor: pointer">
           <span style="color: white">
             {{ user.name }}({{ roleData.roleName }})<i
               class="el-icon-arrow-down el-icon--right"
