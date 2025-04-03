@@ -19,11 +19,11 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, create_datetime, update_datetime, name, parent_id, permission, sort, type, url,icon
+        id, create_datetime, update_datetime, name, parent_id, permission, sort, type, url, icon
     </sql>
 
     <select id="findRoleResource" resultMap="BaseResultMap">
-        select a.*,b.*
+        select DISTINCT a.id, a.create_datetime, a.update_datetime, a.name, a.parent_id, a.permission, a.sort, a.type, a.url, a.icon
         from resources a
         inner join role_resource_bind b on a.id = b.resource_id
         where
@@ -32,7 +32,6 @@
             and a.type = ${typeId}
         </if>
         order by a.sort asc
-
     </select>
 
     <select id="listUrlAndPermission" resultMap="BaseResultMap">

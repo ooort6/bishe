@@ -222,14 +222,14 @@ export default {
                     const hasAnalysisMenu = menuData.some(
                       (item) => item.name === "智能健康分析"
                     );
-                    if (!hasAnalysisMenu) {
-                      menuData.push({
-                        name: "智能健康分析",
-                        url: "/smartAnalysis",
-                        icon: "el-icon-data-analysis",
-                        pic: "",
-                      });
-                    }
+                    // if (!hasAnalysisMenu) {
+                    //   menuData.push({
+                    //     name: "智能健康分析",
+                    //     url: "/smartAnalysis",
+                    //     icon: "el-icon-data-analysis",
+                    //     pic: "",
+                    //   });
+                    // }
                     localStorage.setItem("menu", JSON.stringify(menuData));
                     self.loadingInstance.close();
                     self.$router.push("/index");
