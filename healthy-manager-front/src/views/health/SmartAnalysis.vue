@@ -341,9 +341,17 @@ export default {
         type: "success",
       });
 
+      // 立即生成并显示随机数据
+      this.generateRandomData();
+      // 更新图表
+      this.initCharts();
+
       this.collecting = true;
       this.timer = setInterval(() => {
-        this.fetchData();
+        // 在每次定时器触发时生成新的随机数据
+        this.generateRandomData();
+        // 更新图表显示
+        this.initCharts();
       }, 5000);
     },
     stopDataCollection() {
@@ -380,6 +388,11 @@ export default {
       return Math.min(Math.round((value / target) * 100), 100);
     },
     fetchData() {
+      // 如果正在采集随机数据，不从后端获取数据，避免覆盖随机数据
+      if (this.collecting) {
+        return;
+      }
+
       const userId = this.dataSourceConfig.userId;
       if (!userId) {
         // 如果没有选择用户，清空所有数据
@@ -1050,6 +1063,86 @@ export default {
       } catch (error) {
         console.error("刷新图表时出错:", error);
       }
+    },
+    generateRandomData() {
+      // 创建时间点数组
+      const now = new Date();
+      const times = ["00:00", "06:00", "12:00", "18:00", this.formatTime(now)];
+
+      // 生成心率数据 - 范围60-100
+      const heartRateValues = times.map(
+        () => Math.floor(Math.random() * 40) + 60
+      );
+
+      // 生成血压数据
+      const systolicValues = times.map(
+        () => Math.floor(Math.random() * 30) + 110
+      ); // 110-140
+      const diastolicValues = times.map(
+        () => Math.floor(Math.random() * 20) + 70
+      ); // 70-90
+
+      // 生成血糖数据 - 范围4.4-7.0
+      const bloodSugarValues = times.map(() =>
+        (Math.random() * 2.6 + 4.4).toFixed(1)
+      );
+
+      // 生成睡眠数据
+      const deepSleep = +(Math.random() * 3 + 1).toFixed(1);
+      const lightSleep = +(Math.random() * 4 + 3).toFixed(1);
+      const remSleep = +(Math.random() * 1.5 + 0.5).toFixed(1);
+      const awake = +(Math.random() * 1 + 0.2).toFixed(1);
+
+      // 更新图表数据
+      this.chartData.heartRate = {
+        times: [...times],
+        values: heartRateValues,
+      };
+
+      this.chartData.bloodPressure = {
+        times: [...times],
+        systolic: systolicValues,
+        diastolic: diastolicValues,
+      };
+
+      this.chartData.bloodSugar = {
+        times: [...times],
+        values: bloodSugarValues,
+      };
+
+      // 更新睡眠数据
+      this.healthData.sleep = {
+        deepSleep,
+        lightSleep,
+        remSleep,
+        awake,
+      };
+
+      // 更新其他健康数据
+      this.healthData.calories = Math.floor(Math.random() * 300) + 100;
+      this.healthData.steps = Math.floor(Math.random() * 5000) + 2000;
+      this.healthData.activeMinutes = Math.floor(Math.random() * 40) + 10;
+      this.healthData.heartRate = heartRateValues[heartRateValues.length - 1];
+      this.healthData.bloodPressure.systolic =
+        systolicValues[systolicValues.length - 1];
+      this.healthData.bloodPressure.diastolic =
+        diastolicValues[diastolicValues.length - 1];
+      this.healthData.bloodSugar =
+        bloodSugarValues[bloodSugarValues.length - 1];
+
+      console.log("已生成随机数据:", {
+        heartRate: this.chartData.heartRate,
+        bloodPressure: this.chartData.bloodPressure,
+        bloodSugar: this.chartData.bloodSugar,
+        sleep: this.healthData.sleep,
+      });
+    },
+
+    // 格式化当前时间为HH:MM格式
+    formatTime(date) {
+      const hours = date.getHours().toString().padStart(2, "0");
+      const minutes = date.getMinutes().toString().padStart(2, "0");
+      return `${hours}:${minutes}`;
     },
   },
   mounted() {
